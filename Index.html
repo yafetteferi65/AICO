@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AICO - Investment & Business Consultation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        .service-card {
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .faq-item {
+            transition: all 0.3s ease;
+        }
+        
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .faq-answer.open {
+            max-height: 300px;
+        }
+        
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        
+        .auth-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .auth-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .auth-modal.show .auth-content {
+            transform: scale(1);
+        }
+        
+        .user-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 100;
+        }
+        
+        .user-menu.show {
+            display: block;
+        }
+
+        .opportunity-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .opportunity-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Main Website -->
+    <div id="mainWebsite">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-lg fixed w-full z-50">
+            <div class="container mx-auto px-6">
+                <div class="flex justify-between items-center py-4">
+                    <div class="text-2xl font-bold text-blue-600">AICO</div>
+                    
+                    <!-- Desktop Menu -->
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a href="#home" class="text-gray-700 hover:text-blue-600 transition-colors">Home</a>
+                        <a href="#services" class="text-gray-700 hover:text-blue-600 transition-colors">Services</a>
+                        <a href="#opportunities" class="text-gray-700 hover:text-blue-600 transition-colors">Opportunities</a>
+                        <a href="#about" class="text-gray-700 hover:text-blue-600 transition-colors">About</a>
+                        <a href="#photos" class="text-gray-700 hover:text-blue-600 transition-colors">Gallery</a>
+                        <a href="#documents" class="text-gray-700 hover:text-blue-600 transition-colors">Documents</a>
+                        <a href="#contact" class="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
+                        
+                        <!-- User Profile Section (Hidden by default) -->
+                        <div id="userSection" class="hidden relative">
+                            <button onclick="toggleUserMenu()" class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors">
+                                <img id="userAvatar" src="" alt="User" class="w-8 h-8 rounded-full">
+                                <span id="userName"></span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div id="userMenu" class="user-menu">
+                                <div class="p-4 border-b border-gray-200">
+                                    <p class="font-semibold text-gray-800" id="userMenuName"></p>
+                                    <p class="text-sm text-gray-600" id="userMenuEmail"></p>
+                                </div>
+                                <div class="py-2">
+                                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
+                                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
+                                    <button onclick="signOut()" class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">Sign Out</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden" onclick="toggleMobileMenu()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="mobile-menu md:hidden bg-white absolute top-full left-0 w-full shadow-lg">
+                <div class="px-6 py-4 space-y-4">
+                    <a href="#home" class="block text-gray-700 hover:text-blue-600 transition-colors" onclick="toggleMobileMenu()">Home</a>
+                    <a href="#services" class="block text-gray-700 hover:text-blue-600 transition-colors" onclick="toggleMobileMenu()">Services</a>
+                    <a href="#opportunities" class="block text-gray-700 hover:text-blue-600 transition-colors" onclick="toggleMobileMenu()">Opportunities</a>
+                    <a href="#about" class="block text-gray-700 hover:text-blue-600 transition-colors" onclick="toggleMobileMenu()">About</a>
+                    <a href="#photos" class="block text-gray-700 hover:text-blue-600 transition-colors" onclick="toggleMobileMenu()">Gallery</a>
+                    <a href="#documents" class="block text-gray-700 hover:text-blue-600 transition-colors" onclick="toggleMobileMenu()">Documents</a>
+                    <a href="#contact" class="block text-gray-700 hover:text-blue-600 transition-colors" onclick="toggleMobileMenu()">Contact</a>
+                    
+                    <!-- Mobile User Section (Hidden by default) -->
+                    <div id="mobileUserSection" class="hidden border-t border-gray-200 pt-4">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <img id="mobileUserAvatar" src="" alt="User" class="w-10 h-10 rounded-full">
+                            <div>
+                                <p class="font-semibold text-gray-800" id="mobileUserName"></p>
+                                <p class="text-sm text-gray-600" id="mobileUserEmail"></p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <a href="#" class="block text-gray-700 hover:text-blue-600 transition-colors">Profile</a>
+                            <a href="#" class="block text-gray-700 hover:text-blue-600 transition-colors">Settings</a>
+                            <a href="#" class="block text-gray-700 hover:text-blue-600 transition-colors">Dashboard</a>
+                            <button onclick="signOut()" class="block w-full text-left text-red-600 hover:text-red-700 transition-colors">Sign Out</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section id="home" class="bg-indigo-800 text-white pt-20 pb-16">
+            <div class="container mx-auto px-6">
+                <!-- Authentication Section at Top -->
+                <div id="heroAuthSection" class="flex justify-end mb-8">
+                    <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 flex items-center space-x-4">
+                        <span class="text-white text-sm">Ready to invest?</span>
+                        <button onclick="openAuthModal('signin')" class="text-white hover:text-indigo-200 transition-colors text-sm font-medium">Sign In</button>
+                        <button onclick="openAuthModal('signup')" class="bg-white text-indigo-800 px-4 py-2 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-semibold">Sign Up</button>
+                    </div>
+                </div>
+                
+                <!-- User Welcome Section (Hidden by default) -->
+                <div id="heroUserSection" class="hidden flex justify-end mb-8">
+                    <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 flex items-center space-x-3">
+                        <img id="heroUserAvatar" src="" alt="User" class="w-8 h-8 rounded-full">
+                        <span class="text-white font-medium">Welcome back, <span id="heroUserName"></span>!</span>
+                        <button onclick="toggleUserMenu()" class="text-white hover:text-indigo-200 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <h1 class="text-5xl font-bold mb-6 text-white">
+                        <div>Amhara Investment</div>
+                        <div>Coordination Office, Addis</div>
+                        <div>Ababa</div>
+                    </h1>
+                    <div class="text-xl mb-8 max-w-3xl mx-auto text-indigo-100 space-y-2">
+                        <div>Your gateway to investment opportunities in Ethiopia's capital city.</div>
+                        <div>We facilitate, coordinate, and support investors</div>
+                        <div>in realizing their business potential.</div>
+                    </div>
+                    <div class="space-x-4">
+                        <button onclick="scrollToSection('services')" class="bg-white text-indigo-800 px-8 py-3 rounded-lg font-semibold hover:bg-indigo-100 transition-colors">
+                            Our Services
+                        </button>
+                        <button id="getStartedBtn" onclick="handleGetStarted()" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-800 transition-colors">
+                            Get Started
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Our Services</h2>
+                    <p class="text-xl text-gray-600">Comprehensive solutions for your business needs</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Business Consultation -->
+                    <a href="#business-consultation" onclick="openServicePage('business-consultation'); return false;" class="block">
+                        <div class="service-card bg-white rounded-xl shadow-lg p-8 cursor-pointer">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Business Consultation</h3>
+                                <p class="text-gray-600">Strategic guidance and expert advice for business growth and optimization</p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- Investment Licensing -->
+                    <a href="#investment-licensing" onclick="openServicePage('investment-licensing'); return false;" class="block">
+                        <div class="service-card bg-white rounded-xl shadow-lg p-8 cursor-pointer">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Investment Licensing</h3>
+                                <p class="text-gray-600">Complete licensing solutions for investment firms and financial services</p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- Site Selection -->
+                    <a href="#site-selection" onclick="openServicePage('site-selection'); return false;" class="block">
+                        <div class="service-card bg-white rounded-xl shadow-lg p-8 cursor-pointer">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Site Selection</h3>
+                                <p class="text-gray-600">Strategic location analysis and site selection for optimal business placement</p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- Legal Advisory -->
+                    <a href="#legal-advisory" onclick="openServicePage('legal-advisory'); return false;" class="block">
+                        <div class="service-card bg-white rounded-xl shadow-lg p-8 cursor-pointer">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Legal Advisory</h3>
+                                <p class="text-gray-600">Professional legal guidance for business compliance and regulatory matters</p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- Market Research -->
+                    <a href="#market-research" onclick="openServicePage('market-research'); return false;" class="block">
+                        <div class="service-card bg-white rounded-xl shadow-lg p-8 cursor-pointer">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Market Research</h3>
+                                <p class="text-gray-600">Comprehensive market analysis and competitive intelligence services</p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- Financial Planning -->
+                    <a href="#financial-planning" onclick="openServicePage('financial-planning'); return false;" class="block">
+                        <div class="service-card bg-white rounded-xl shadow-lg p-8 cursor-pointer">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Financial Planning</h3>
+                                <p class="text-gray-600">Strategic financial planning and investment portfolio management</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Investment Opportunities -->
+        <section id="opportunities" class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Investment Opportunities</h2>
+                    <p class="text-xl text-gray-600">Explore high-potential sectors in Ethiopia's economic hub</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <a href="#manufacturing" onclick="openOpportunityPage('manufacturing'); return false;" class="block">
+                        <div class="opportunity-card bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+                            <div class="text-4xl mb-4">🏭</div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Manufacturing</h3>
+                            <p class="text-gray-600 text-sm">Textiles, leather goods, food processing, and light manufacturing with access to regional markets.</p>
+                        </div>
+                    </a>
+                    
+                    <a href="#technology" onclick="openOpportunityPage('technology'); return false;" class="block">
+                        <div class="opportunity-card bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+                            <div class="text-4xl mb-4">💻</div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Technology</h3>
+                            <p class="text-gray-600 text-sm">ICT services, software development, and digital innovation in East Africa's tech hub.</p>
+                        </div>
+                    </a>
+                    
+                    <a href="#tourism" onclick="openOpportunityPage('tourism'); return false;" class="block">
+                        <div class="opportunity-card bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+                            <div class="text-4xl mb-4">🏨</div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Tourism & Hospitality</h3>
+                            <p class="text-gray-600 text-sm">Hotels, restaurants, and tourism services in the diplomatic capital of Africa.</p>
+                        </div>
+                    </a>
+                    
+                    <a href="#agribusiness" onclick="openOpportunityPage('agribusiness'); return false;" class="block">
+                        <div class="opportunity-card bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+                            <div class="text-4xl mb-4">🌱</div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Agribusiness</h3>
+                            <p class="text-gray-600 text-sm">Coffee processing, horticulture, and agricultural value chain development.</p>
+                        </div>
+                    </a>
+                    
+                    <a href="#construction" onclick="openOpportunityPage('construction'); return false;" class="block">
+                        <div class="opportunity-card bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+                            <div class="text-4xl mb-4">🏗️</div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Construction</h3>
+                            <p class="text-gray-600 text-sm">Real estate development, infrastructure projects, and building materials.</p>
+                        </div>
+                    </a>
+                    
+                    <a href="#energy" onclick="openOpportunityPage('energy'); return false;" class="block">
+                        <div class="opportunity-card bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+                            <div class="text-4xl mb-4">⚡</div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Energy</h3>
+                            <p class="text-gray-600 text-sm">Renewable energy projects, solar installations, and energy efficiency solutions.</p>
+                        </div>
+                    </a>
+                    
+                    <a href="#healthcare" onclick="openOpportunityPage('healthcare'); return false;" class="block">
+                        <div class="opportunity-card bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+                            <div class="text-4xl mb-4">🏥</div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Healthcare</h3>
+                            <p class="text-gray-600 text-sm">Medical facilities, pharmaceutical manufacturing, and health technology services.</p>
+                        </div>
+                    </a>
+                    
+                    <a href="#education" onclick="openOpportunityPage('education'); return false;" class="block">
+                        <div class="opportunity-card bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+                            <div class="text-4xl mb-4">🎓</div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Education</h3>
+                            <p class="text-gray-600 text-sm">Private schools, vocational training, and educational technology platforms.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800 mb-4">About AICO</h2>
+                    <p class="text-xl text-gray-600">Your success is our priority</p>
+                </div>
+                
+                <div class="mb-8">
+                    <p class="text-lg text-gray-600 leading-relaxed max-w-4xl mx-auto text-center">
+                        The Amhara Investment Coordination Office, Addis Ababa serves as the primary gateway for investors seeking opportunities in Ethiopia's capital city. We are committed to creating a conducive environment for sustainable investment and economic growth.
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="bg-white rounded-xl p-6 text-center shadow-lg">
+                            <div class="text-3xl font-bold text-blue-600 mb-2">1000+</div>
+                            <div class="text-gray-600">Active Investors</div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl p-6 text-center shadow-lg">
+                            <div class="text-3xl font-bold text-green-600 mb-2">$10B</div>
+                            <div class="text-gray-600">Investment Value</div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl p-6 text-center shadow-lg">
+                            <div class="text-3xl font-bold text-purple-600 mb-2">15</div>
+                            <div class="text-gray-600">Sectors Covered</div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl p-6 text-center shadow-lg">
+                            <div class="text-3xl font-bold text-red-600 mb-2">24/7</div>
+                            <div class="text-gray-600">Support Available</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center mr-4 mt-1">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">One-stop service for investment licensing and permits</h4>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center mr-4 mt-1">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">Strategic location at the heart of East Africa</h4>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center mr-4 mt-1">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">Access to skilled workforce and growing consumer market</h4>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center mr-4 mt-1">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">Comprehensive investment incentives and support</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-16 bg-black">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-white mb-4">Get In Touch</h2>
+                    <p class="text-xl text-gray-300">Ready to start your investment journey? Contact us today for personalized assistance.</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="text-2xl font-semibold text-white mb-6">Contact Information</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-white mb-2">Office Address</h4>
+                                    <p class="text-gray-300">Addis Ababa Investment Coordination Office</p>
+                                    <p class="text-gray-300">Arada Sub-City, Woreda 7</p>
+                                    <p class="text-gray-300">Addis Ababa</p>
+                                    <p class="text-gray-300">Ethiopia</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-white mb-2">Phone</h4>
+                                    <p class="text-gray-300">+251 11 551 7070</p>
+                                    <p class="text-gray-300">+251 11 551 8080</p>
+                                    <p class="text-gray-300">Fax: +251 11 551 9090</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-white mb-2">Email</h4>
+                                    <p class="text-gray-300">info@aico.gov.et</p>
+                                    <p class="text-gray-300">investment@addisababa.gov.et</p>
+                                    <p class="text-gray-300">licensing@aico.gov.et</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-yellow-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-white mb-2">Office Hours</h4>
+                                    <p class="text-gray-300">Monday - Friday: 8:00 AM - 5:00 PM</p>
+                                    <p class="text-gray-300">Saturday: 8:00 AM - 12:00 PM</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="bg-gray-900 rounded-xl p-8">
+                            <h3 class="text-2xl font-semibold text-white mb-6">Send us a Message</h3>
+                            <div class="bg-yellow-900 border border-yellow-600 text-yellow-300 px-4 py-3 rounded mb-6">
+                                <strong>⚠️ Demo Form</strong> - Messages will not be sent
+                            </div>
+                            <form class="space-y-4">
+                                <div>
+                                    <label class="block text-white font-semibold mb-2">Full Name</label>
+                                    <input type="text" class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-white rounded-lg focus:outline-none focus:border-blue-500" placeholder="Your full name">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-white font-semibold mb-2">Email Address</label>
+                                    <input type="email" class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-white rounded-lg focus:outline-none focus:border-blue-500" placeholder="your.email@example.com">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-white font-semibold mb-2">Investment Interest</label>
+                                    <select class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-white rounded-lg focus:outline-none focus:border-blue-500">
+                                        <option>Select sector of interest</option>
+                                        <option>Manufacturing</option>
+                                        <option>Technology</option>
+                                        <option>Tourism & Hospitality</option>
+                                        <option>Agribusiness</option>
+                                        <option>Construction</option>
+                                        <option>Energy</option>
+                                        <option>Healthcare</option>
+                                        <option>Education</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-white font-semibold mb-2">Message</label>
+                                    <textarea rows="4" class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-white rounded-lg focus:outline-none focus:border-blue-500" placeholder="Tell us about your investment plans..."></textarea>
+                                </div>
+                                
+                                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                                    Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-12">
+            <div class="container mx-auto px-6">
+                <div class="grid md:grid-cols-4 gap-8">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4">AICO</h3>
+                        <p class="text-gray-400">Your trusted partner for investment opportunities and business consultation services.</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Services</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#business-consultation" onclick="openServicePage('business-consultation'); return false;" class="hover:text-white transition-colors">Business Consultation</a></li>
+                            <li><a href="#investment-licensing" onclick="openServicePage('investment-licensing'); return false;" class="hover:text-white transition-colors">Investment Licensing</a></li>
+                            <li><a href="#site-selection" onclick="openServicePage('site-selection'); return false;" class="hover:text-white transition-colors">Site Selection</a></li>
+                            <li><a href="#legal-advisory" onclick="openServicePage('legal-advisory'); return false;" class="hover:text-white transition-colors">Legal Advisory</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Opportunities</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#manufacturing" onclick="openOpportunityPage('manufacturing'); return false;" class="hover:text-white transition-colors">Manufacturing</a></li>
+                            <li><a href="#technology" onclick="openOpportunityPage('technology'); return false;" class="hover:text-white transition-colors">Technology</a></li>
+                            <li><a href="#tourism" onclick="openOpportunityPage('tourism'); return false;" class="hover:text-white transition-colors">Tourism</a></li>
+                            <li><a href="#healthcare" onclick="openOpportunityPage('healthcare'); return false;" class="hover:text-white transition-colors">Healthcare</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Follow Us</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                    <p>&copy; 2024 AICO. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="authTitle" class="text-2xl font-bold text-gray-800">Sign In</h2>
+                <button onclick="closeAuthModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Sign In Form -->
+            <div id="signinForm">
+                <form onsubmit="handleEmailSignIn(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Email Address</label>
+                        <input type="email" id="signinEmail" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="your@email.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Password</label>
+                        <input type="password" id="signinPassword" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Enter your password">
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span class="text-sm text-gray-600">Remember me</span>
+                        </label>
+                        <a href="#" class="text-sm text-blue-600 hover:text-blue-800">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        Sign In
+                    </button>
+                </form>
+                
+                <div class="mt-6">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 bg-white text-gray-500">Or continue with</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <div id="googleSignInButton" class="w-full"></div>
+                    </div>
+                </div>
+                
+                <p class="mt-6 text-center text-sm text-gray-600">
+                    Don't have an account? 
+                    <button onclick="switchToSignUp()" class="text-blue-600 hover:text-blue-800 font-semibold">Sign up</button>
+                </p>
+            </div>
+            
+            <!-- Sign Up Form -->
+            <div id="signupForm" class="hidden">
+                <form onsubmit="handleEmailSignUp(event)" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">First Name</label>
+                            <input type="text" id="signupFirstName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="John">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">Last Name</label>
+                            <input type="text" id="signupLastName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Doe">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Email Address</label>
+                        <input type="email" id="signupEmail" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="your@email.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Password</label>
+                        <input type="password" id="signupPassword" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Create a strong password">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Confirm your password">
+                    </div>
+                    
+                    <div>
+                        <label class="flex items-start">
+                            <input type="checkbox" required class="mr-2 mt-1">
+                            <span class="text-sm text-gray-600">I agree to the <a href="#" class="text-blue-600 hover:text-blue-800">Terms of Service</a> and <a href="#" class="text-blue-600 hover:text-blue-800">Privacy Policy</a></span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        Create Account
+                    </button>
+                </form>
+                
+                <div class="mt-6">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 bg-white text-gray-500">Or sign up with</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <div id="googleSignUpButton" class="w-full"></div>
+                    </div>
+                </div>
+                
+                <p class="mt-6 text-center text-sm text-gray-600">
+                    Already have an account? 
+                    <button onclick="switchToSignIn()" class="text-blue-600 hover:text-blue-800 font-semibold">Sign in</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Detail Page -->
+    <div id="servicePage" class="hidden">
+        <div class="container mx-auto px-6 py-12">
+            <div class="max-w-4xl mx-auto">
+                <!-- Back Button -->
+                <button onclick="goBackToMain()" class="mb-8 flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Main Site
+                </button>
+                
+                <!-- Dynamic Service Content -->
+                <div id="serviceContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Opportunity Detail Page -->
+    <div id="opportunityPage" class="hidden">
+        <div class="container mx-auto px-6 py-12">
+            <div class="max-w-4xl mx-auto">
+                <!-- Back Button -->
+                <button onclick="goBackToMain()" class="mb-8 flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Main Site
+                </button>
+                
+                <!-- Dynamic Opportunity Content -->
+                <div id="opportunityContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Authentication state
+        let currentUser = null;
+        let users = JSON.parse(localStorage.getItem('aicoUsers') || '[]');
+        
+        // Service data
+        const serviceData = {
+            'business-consultation': {
+                title: 'Business Consultation Services',
+                icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+                color: 'blue',
+                description: 'Expert guidance to accelerate your business success',
+                whatIs: 'Business consultation is a professional service that provides expert advice and strategic guidance to help businesses improve their performance, solve problems, and achieve their goals. Our consultants work closely with business owners and management teams to analyze current operations, identify opportunities for growth, and develop actionable strategies.',
+                services: [
+                    { title: 'Strategic Planning', desc: 'Develop comprehensive business strategies and roadmaps for growth' },
+                    { title: 'Market Analysis', desc: 'In-depth market research and competitive analysis' },
+                    { title: 'Financial Planning', desc: 'Budget optimization and financial strategy development' },
+                    { title: 'Operations Optimization', desc: 'Streamline processes and improve operational efficiency' },
+                    { title: 'Risk Management', desc: 'Identify and mitigate business risks and vulnerabilities' },
+                    { title: 'Digital Transformation', desc: 'Technology integration and digital strategy implementation' }
+                ],
+                faqs: [
+                    { q: "What's your track record with business growth?", a: "We've helped over 200+ businesses achieve an average of 35% revenue growth within 12 months. Our clients have raised over $50M in funding and expanded to new markets successfully." },
+                    { q: "How do you ensure ROI on consultation investment?", a: "We establish clear KPIs and measurable outcomes from day one. Our average client sees 3-5x ROI within the first year through increased efficiency, cost reduction, and revenue growth strategies." },
+                    { q: "What makes your approach different from competitors?", a: "We combine data-driven analysis with hands-on implementation support. Unlike traditional consultants who just provide reports, we work alongside your team to execute strategies and ensure lasting results." },
+                    { q: "How quickly can we expect to see results?", a: "Initial improvements typically appear within 30-60 days, with significant results visible within 3-6 months. Long-term strategic benefits continue to compound over 12-24 months." },
+                    { q: "Do you have experience in our industry?", a: "Our team has deep expertise across technology, healthcare, finance, retail, manufacturing, and professional services. We match consultants with relevant industry experience to your specific sector." },
+                    { q: "What's the typical investment range for your services?", a: "Investment ranges from $15K-$150K depending on project scope and duration. We offer flexible payment structures and performance-based options to align with your budget and goals." }
+                ]
+            },
+            'investment-licensing': {
+                title: 'Investment Licensing Services',
+                icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1',
+                color: 'green',
+                description: 'Complete licensing solutions for investment firms and financial services',
+                whatIs: 'Investment licensing is the process of obtaining legal authorization to operate investment-related businesses in Ethiopia. Our comprehensive licensing services ensure full compliance with Ethiopian Investment Commission regulations and help you navigate the complex regulatory landscape efficiently.',
+                services: [
+                    { title: 'License Application Preparation', desc: 'Complete documentation and application processing for all investment licenses' },
+                    { title: 'Regulatory Compliance', desc: 'Ensure adherence to Ethiopian Investment Commission requirements' },
+                    { title: 'Permit Coordination', desc: 'Coordinate multiple permits and approvals from various government agencies' },
+                    { title: 'Legal Documentation', desc: 'Prepare all required legal documents and corporate structures' },
+                    { title: 'Timeline Management', desc: 'Streamlined process management to minimize approval timeframes' },
+                    { title: 'Ongoing Support', desc: 'Continuous compliance monitoring and renewal assistance' }
+                ],
+                faqs: [
+                    { q: "How long does the licensing process typically take?", a: "Standard investment licenses take 45-90 days depending on the sector and investment size. We expedite the process through our established relationships with regulatory bodies." },
+                    { q: "What are the minimum investment requirements?", a: "Minimum investment varies by sector: Manufacturing ($200K), Services ($100K), Technology ($50K). We help structure investments to meet requirements efficiently." },
+                    { q: "Do you handle licenses for foreign investors?", a: "Yes, we specialize in foreign investment licensing including work permits, residence permits, and business licenses. We guide you through the entire process." },
+                    { q: "What documents are required for licensing?", a: "Required documents include business plan, financial statements, passport copies, educational certificates, and sector-specific technical documents. We provide a complete checklist." },
+                    { q: "Can you help with license renewals?", a: "Absolutely. We provide ongoing compliance monitoring and handle all renewal processes to ensure your licenses remain current and valid." },
+                    { q: "What happens if our application is rejected?", a: "We have a 98% approval rate due to thorough preparation. If issues arise, we work directly with authorities to address concerns and resubmit applications." }
+                ]
+            },
+            'site-selection': {
+                title: 'Site Selection Services',
+                icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z',
+                color: 'purple',
+                description: 'Strategic location analysis and site selection for optimal business placement',
+                whatIs: 'Site selection is a critical decision that can make or break your investment success. Our comprehensive site selection services combine market analysis, infrastructure assessment, and strategic planning to identify the optimal location for your business operations in Addis Ababa and surrounding areas.',
+                services: [
+                    { title: 'Location Analysis', desc: 'Comprehensive evaluation of potential sites based on business requirements' },
+                    { title: 'Infrastructure Assessment', desc: 'Detailed analysis of utilities, transportation, and communication infrastructure' },
+                    { title: 'Market Proximity Studies', desc: 'Analysis of customer base, suppliers, and market accessibility' },
+                    { title: 'Cost-Benefit Analysis', desc: 'Complete financial evaluation including land costs, taxes, and operational expenses' },
+                    { title: 'Regulatory Compliance', desc: 'Zoning verification and regulatory requirement assessment' },
+                    { title: 'Negotiation Support', desc: 'Assistance with land acquisition and lease negotiations' }
+                ],
+                faqs: [
+                    { q: "How do you determine the best location for our business?", a: "We use a comprehensive scoring system evaluating 25+ factors including market access, infrastructure, costs, workforce availability, and growth potential specific to your industry." },
+                    { q: "What areas of Addis Ababa do you cover?", a: "We cover all sub-cities of Addis Ababa plus surrounding industrial zones including Kilinto, Dukem, Sebeta, and other emerging business districts." },
+                    { q: "Can you help with industrial park placements?", a: "Yes, we have partnerships with major industrial parks and can facilitate placement in Bole Lemi, Kilinto, Eastern Industry Zone, and other specialized industrial areas." },
+                    { q: "What's included in your site analysis report?", a: "Our reports include demographic analysis, infrastructure assessment, competitive landscape, cost projections, regulatory requirements, and detailed recommendations with risk analysis." },
+                    { q: "Do you assist with land acquisition?", a: "We provide full support including due diligence, legal verification, negotiation assistance, and coordination with relevant government offices for land acquisition or lease agreements." },
+                    { q: "How long does the site selection process take?", a: "Typical site selection takes 2-4 weeks for initial analysis and 4-8 weeks for complete evaluation including due diligence, depending on the complexity of requirements." }
+                ]
+            },
+            'legal-advisory': {
+                title: 'Legal Advisory Services',
+                icon: 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3',
+                color: 'red',
+                description: 'Professional legal guidance for business compliance and regulatory matters',
+                whatIs: 'Legal advisory services provide comprehensive legal support for businesses operating in Ethiopia. Our experienced legal team ensures full compliance with Ethiopian commercial law, investment regulations, and international business practices while protecting your interests throughout your investment journey.',
+                services: [
+                    { title: 'Corporate Law', desc: 'Company formation, corporate governance, and structural optimization' },
+                    { title: 'Investment Law', desc: 'Investment agreements, joint ventures, and foreign investment compliance' },
+                    { title: 'Contract Management', desc: 'Contract drafting, review, and negotiation for all business agreements' },
+                    { title: 'Regulatory Compliance', desc: 'Ongoing compliance monitoring and regulatory requirement management' },
+                    { title: 'Dispute Resolution', desc: 'Commercial dispute resolution and litigation support services' },
+                    { title: 'Intellectual Property', desc: 'Trademark, patent, and intellectual property protection services' }
+                ],
+                faqs: [
+                    { q: "What types of business structures can you help establish?", a: "We assist with Private Limited Companies (PLC), Share Companies, sole proprietorships, partnerships, and representative offices. We recommend the optimal structure based on your business needs." },
+                    { q: "Do you handle employment law matters?", a: "Yes, we provide comprehensive employment law services including contract drafting, labor compliance, work permit applications, and dispute resolution for both local and expatriate employees." },
+                    { q: "Can you assist with tax law compliance?", a: "We work closely with tax specialists to ensure full compliance with Ethiopian tax law, including VAT registration, income tax, and investment incentive applications." },
+                    { q: "What's your experience with foreign investment law?", a: "Our team has 15+ years of experience in Ethiopian investment law and has successfully handled over 500 foreign investment projects across all major sectors." },
+                    { q: "Do you provide ongoing legal support?", a: "Yes, we offer retainer-based ongoing legal support including compliance monitoring, contract management, and general legal counsel for day-to-day operations." },
+                    { q: "How do you handle cross-border legal issues?", a: "We have partnerships with international law firms and extensive experience in cross-border transactions, ensuring seamless legal support for multinational operations." }
+                ]
+            },
+            'market-research': {
+                title: 'Market Research Services',
+                icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+                color: 'yellow',
+                description: 'Comprehensive market analysis and competitive intelligence services',
+                whatIs: 'Market research provides critical insights into Ethiopian market dynamics, consumer behavior, and competitive landscapes. Our research services help investors make informed decisions by providing accurate, up-to-date market intelligence and strategic recommendations tailored to your specific industry and investment goals.',
+                services: [
+                    { title: 'Market Size Analysis', desc: 'Comprehensive market sizing and growth potential assessment' },
+                    { title: 'Consumer Behavior Studies', desc: 'In-depth analysis of target customer preferences and buying patterns' },
+                    { title: 'Competitive Intelligence', desc: 'Detailed competitor analysis and market positioning strategies' },
+                    { title: 'Industry Trends', desc: 'Current and emerging trends analysis with future projections' },
+                    { title: 'Pricing Strategy', desc: 'Market-based pricing recommendations and elasticity analysis' },
+                    { title: 'Entry Strategy', desc: 'Market entry recommendations and go-to-market strategies' }
+                ],
+                faqs: [
+                    { q: "What markets do you research?", a: "We research all major sectors including manufacturing, technology, healthcare, education, retail, agriculture, and services across Ethiopia with focus on Addis Ababa and major regional cities." },
+                    { q: "How current is your market data?", a: "We maintain real-time market databases updated monthly, with quarterly comprehensive reports. All research includes the most recent market developments and regulatory changes." },
+                    { q: "What research methodologies do you use?", a: "We combine primary research (surveys, interviews, focus groups) with secondary research (government data, industry reports) and advanced analytics for comprehensive market insights." },
+                    { q: "Can you research niche or emerging markets?", a: "Yes, we specialize in emerging market research and have successfully analyzed niche sectors including fintech, e-commerce, renewable energy, and specialized manufacturing." },
+                    { q: "How long does market research take?", a: "Standard market research takes 3-6 weeks depending on scope. Rush projects can be completed in 1-2 weeks with our rapid research methodology." },
+                    { q: "Do you provide ongoing market monitoring?", a: "Yes, we offer subscription-based market monitoring services with monthly updates, quarterly reports, and real-time alerts on significant market developments." }
+                ]
+            },
+            'financial-planning': {
+                title: 'Financial Planning Services',
+                icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1',
+                color: 'indigo',
+                description: 'Strategic financial planning and investment portfolio management',
+                whatIs: 'Financial planning services provide comprehensive financial strategy development and implementation support for businesses and investors. Our expert financial advisors help optimize capital allocation, manage financial risks, and develop sustainable growth strategies aligned with Ethiopian market conditions and international best practices.',
+                services: [
+                    { title: 'Investment Strategy', desc: 'Comprehensive investment planning and portfolio optimization' },
+                    { title: 'Financial Modeling', desc: 'Detailed financial projections and scenario analysis' },
+                    { title: 'Capital Structure', desc: 'Optimal debt-equity mix and financing strategy development' },
+                    { title: 'Cash Flow Management', desc: 'Working capital optimization and cash flow forecasting' },
+                    { title: 'Risk Assessment', desc: 'Financial risk analysis and mitigation strategies' },
+                    { title: 'Performance Monitoring', desc: 'KPI development and financial performance tracking systems' }
+                ],
+                faqs: [
+                    { q: "What financial planning services do you offer?", a: "We provide comprehensive financial planning including investment strategy, budgeting, cash flow management, risk assessment, and performance monitoring tailored to Ethiopian business environment." },
+                    { q: "Can you help with funding and financing options?", a: "Yes, we assist with identifying and securing various funding sources including bank loans, development finance, equity investment, and government incentive programs." },
+                    { q: "Do you work with international investors?", a: "Absolutely. We have extensive experience with international investors and understand cross-border financial planning, currency hedging, and repatriation strategies." },
+                    { q: "What's your approach to financial risk management?", a: "We use comprehensive risk assessment frameworks covering market, operational, currency, and regulatory risks with tailored mitigation strategies for the Ethiopian market." },
+                    { q: "Can you help with tax-efficient structuring?", a: "Yes, we work with tax specialists to develop tax-efficient structures while ensuring full compliance with Ethiopian tax law and international tax treaties." },
+                    { q: "Do you provide ongoing financial monitoring?", a: "We offer ongoing financial advisory services including monthly performance reviews, quarterly strategy updates, and annual comprehensive financial health assessments." }
+                ]
+            },
+            'education': {
+                title: 'Education Investment Opportunities',
+                icon: '🎓',
+                color: 'teal',
+                description: 'Private schools, vocational training, and educational technology platforms',
+                overview: 'Ethiopia\'s education sector presents exceptional investment opportunities, driven by a young population of 120 million with 70% under age 30, growing middle class demand for quality education, and government commitment to expanding access to education. With over 25 million students in the education system and significant gaps in quality private education, vocational training, and educational technology, the sector offers substantial opportunities for private investors across all education levels from early childhood to higher education and professional development.',
+                keyOpportunities: [
+                    { title: 'Private Schools (K-12)', desc: 'International schools, private primary and secondary schools serving growing middle class families seeking quality education', potential: '$1.5B market opportunity' },
+                    { title: 'Higher Education & Universities', desc: 'Private universities, colleges, and specialized institutes offering undergraduate and graduate programs', potential: '$800M market size' },
+                    { title: 'Vocational & Technical Training', desc: 'TVET institutes, skills training centers, and certification programs for Ethiopia\'s growing industrial workforce', potential: '$600M market potential' },
+                    { title: 'Educational Technology & E-Learning', desc: 'Digital learning platforms, online courses, educational apps, and learning management systems', potential: '$300M opportunity' },
+                    { title: 'Early Childhood Education', desc: 'Kindergartens, preschools, and daycare centers for working parents in urban areas', potential: '$400M market' },
+                    { title: 'Language & Test Preparation', desc: 'English language institutes, IELTS/TOEFL prep centers, and foreign language training', potential: '$200M market size' },
+                    { title: 'Professional Development & Training', desc: 'Executive education, corporate training, professional certifications, and continuing education', potential: '$350M market potential' },
+                    { title: 'Educational Support Services', desc: 'Tutoring centers, educational consulting, curriculum development, and teacher training', potential: '$250M opportunity' },
+                    { title: 'Educational Infrastructure & Supplies', desc: 'School construction, educational equipment, textbooks, and learning materials manufacturing', potential: '$700M market' },
+                    { title: 'Special Needs & Inclusive Education', desc: 'Schools and programs for students with disabilities and special educational needs', potential: '$150M emerging market' }
+                ],
+                advantages: [
+                    'Massive student population of 25+ million across all education levels',
+                    'Young demographic with 70% of population under age 30 driving education demand',
+                    'Growing middle class with 15% annual increase in education spending',
+                    'Government policy supporting private sector participation in education',
+                    'Significant quality gaps in public education creating private sector opportunities',
+                    'Strategic location serving regional education market of 400M+ people',
+                    'Low operational costs with competitive teacher salaries and facility costs',
+                    'Strong cultural emphasis on education and academic achievement',
+                    'Expanding urban population concentrated in major cities',
+                    'Government investment in education infrastructure supporting sector growth',
+                    'Growing demand for English language and international curriculum',
+                    'Increasing corporate training needs as economy modernizes'
+                ],
+                faqs: [
+                    { q: "What makes Ethiopia attractive for education investments?", a: "Ethiopia offers a massive student population (25M+), young demographics (70% under 30), growing middle class education spending (15% annual increase), government support for private education, significant quality gaps in public system, strategic regional location, and low operational costs with strong cultural emphasis on education." },
+                    { q: "What is the current state of Ethiopia\'s education system?", a: "Ethiopia has 25M+ students across all levels with 95% primary enrollment but quality challenges. Private education serves 15% of students and grows 20% annually. Higher education has 50+ universities but limited capacity. Significant opportunities exist in quality private education at all levels." },
+                    { q: "What are the licensing and regulatory requirements for schools?", a: "Educational institutions require licenses from Ministry of Education, regional education bureaus, building permits, curriculum approval, teacher certification, and compliance with national education standards. Process takes 3-6 months with proper documentation and support." },
+                    { q: "What is the demand for private education across different levels?", a: "Strong demand exists at all levels: K-12 private schools (20% annual growth), higher education (300,000+ students seeking university admission annually), vocational training (growing industrial workforce needs), and professional development (expanding corporate sector requirements)." },
+                    { q: "What government support exists for education investments?", a: "Government provides 5-8 year tax holidays for education investments, streamlined licensing through one-stop-shop, duty-free imports of educational equipment, land lease facilitation, public-private partnership opportunities, and encourages foreign investment in education sector." },
+                    { q: "What are the minimum investment requirements and typical project sizes?", a: "Education investments require minimum $100K for foreign investors. Typical projects: K-12 schools ($500K-5M), universities ($5-50M), vocational centers ($200K-2M), language institutes ($100K-500K), and EdTech platforms ($50K-1M) with government incentives for larger investments." },
+                    { q: "What curriculum and language of instruction options are available?", a: "Schools can offer Ethiopian national curriculum, international curricula (British, American, IB), or blended programs. Languages include English, Amharic, and regional languages. International schools with English instruction are particularly in demand among middle class families." },
+                    { q: "What is the teacher availability and qualification situation?", a: "Ethiopia produces 50,000+ university graduates annually including education graduates. Teacher training colleges exist nationwide. Opportunities exist for international teacher recruitment and local teacher professional development programs with competitive salary packages." },
+                    { q: "What are the key urban markets for education investments?", a: "Primary markets include Addis Ababa (4M+ population), Dire Dawa, Mekelle, Bahir Dar, Hawassa, and Adama. Addis Ababa offers the largest market with highest concentration of middle class families and international community seeking quality education." },
+                    { q: "What technology and digital learning opportunities exist?", a: "Growing opportunities in educational technology including online learning platforms, digital content development, learning management systems, educational apps, and blended learning solutions. Government supports digital education initiatives and technology integration in schools." },
+                    { q: "What are the vocational and technical education opportunities?", a: "Strong demand for TVET programs in manufacturing, construction, healthcare, hospitality, ICT, and agriculture. Government prioritizes skills development for industrial growth. Opportunities include establishing TVET institutes, corporate training centers, and certification programs." },
+                    { q: "How do we ensure quality and accreditation for educational institutions?", a: "Quality assurance through Ministry of Education standards, international accreditation bodies (Cambridge, IB, etc.), teacher certification programs, and continuous improvement systems. We assist with quality framework development and accreditation processes." },
+                    { q: "What financing and payment models work in Ethiopian education?", a: "Payment models include semester/annual fees, installment plans, scholarship programs, and corporate sponsorships. Growing acceptance of education loans and financing options. Fee ranges: K-12 ($500-3000/year), universities ($1000-5000/year), vocational programs ($200-1000/program)." },
+                    { q: "What are the main challenges and risk mitigation strategies?", a: "Main challenges include regulatory compliance, teacher recruitment, infrastructure development, and fee collection. Mitigation includes comprehensive regulatory support, teacher training programs, phased development, diversified revenue streams, and strong financial management systems." },
+                    { q: "What regional and international education opportunities exist?", a: "Ethiopia serves as regional education hub with students from neighboring countries. Opportunities include establishing branch campuses, distance learning programs, professional development for regional markets, and partnerships with international educational institutions for program delivery." }
+                ]
+            }
+        };
+
+        // Opportunity data
+        const opportunityData = {
+            'technology': {
+                title: 'Technology Investment Opportunities',
+                icon: '💻',
+                color: 'green',
+                description: 'ICT services, software development, and digital innovation in East Africa\'s tech hub',
+                overview: 'Ethiopia is rapidly emerging as East Africa\'s technology hub, with Addis Ababa leading the digital transformation. The government\'s Digital Ethiopia 2025 strategy, combined with a young tech-savvy population and growing internet penetration, creates exceptional opportunities for technology investors across fintech, e-commerce, software development, and digital services.',
+                keyOpportunities: [
+                    { title: 'Fintech & Digital Payments', desc: 'Massive unbanked population and mobile money growth potential', potential: '$5B market opportunity' },
+                    { title: 'E-commerce Platforms', desc: 'Growing middle class and smartphone adoption driving online commerce', potential: '$2B market size' },
+                    { title: 'Software Development', desc: 'Export-oriented software services and custom development', potential: '$800M export potential' },
+                    { title: 'EdTech Solutions', desc: 'Educational technology for 25M+ students and workforce training', potential: '$1.2B market' },
+                    { title: 'HealthTech', desc: 'Digital health solutions for underserved healthcare market', potential: '$600M opportunity' },
+                    { title: 'AgriTech', desc: 'Technology solutions for 80% agricultural workforce', potential: '$1.5B market potential' }
+                ],
+                advantages: [
+                    'Fastest growing ICT market in East Africa (25% annual growth)',
+                    'Young population with 70% under age 30',
+                    'Government support through Digital Ethiopia 2025 strategy',
+                    'Low operational costs and competitive talent pool',
+                    'Strategic location as regional hub for 400M+ people',
+                    'Rapidly improving telecommunications infrastructure'
+                ],
+                faqs: [
+                    { q: "What makes Ethiopia attractive for tech investments?", a: "Ethiopia offers the fastest growing ICT market in East Africa, young tech-savvy population, government support through Digital Ethiopia 2025, low costs, and strategic location as regional hub." },
+                    { q: "What is the current state of internet and mobile penetration?", a: "Mobile penetration is 45% and growing rapidly, internet users exceed 25M, and smartphone adoption is accelerating. 4G coverage reaches 85% of urban areas with 5G rollout planned." },
+                    { q: "Are there skilled tech professionals available?", a: "Ethiopia produces 50,000+ university graduates annually including 15,000+ in STEM fields. Major universities offer computer science and engineering programs with growing tech bootcamps." },
+                    { q: "What government support exists for tech startups?", a: "Government provides tax incentives for ICT companies, startup incubation programs, digital payment licensing frameworks, and plans for tech parks and innovation hubs." },
+                    { q: "What are the regulatory requirements for tech companies?", a: "Tech companies need business licenses, ICT permits for telecommunications services, and compliance with data protection laws. Fintech requires additional financial service licensing." },
+                    { q: "What funding and investment opportunities are available?", a: "Growing venture capital presence, government startup funds, international development finance, and angel investor networks. Recent deals include $8M+ funding rounds for local startups." }
+                ]
+            },
+            'tourism': {
+                title: 'Tourism & Hospitality Investment Opportunities',
+                icon: '🏨',
+                color: 'purple',
+                description: 'Hotels, restaurants, and tourism services in the diplomatic capital of Africa',
+                overview: 'Addis Ababa, as the diplomatic capital of Africa and home to the African Union, presents exceptional tourism and hospitality investment opportunities. The city attracts over 1.2 million international visitors annually for business, conferences, and leisure. With Ethiopia\'s rich cultural heritage, growing middle class, and increasing international connectivity, the tourism and hospitality sector offers substantial growth potential for investors.',
+                keyOpportunities: [
+                    { title: 'Business Hotels & Conference Centers', desc: 'High demand from diplomatic missions, AU meetings, and international conferences', potential: '$800M market opportunity' },
+                    { title: 'Boutique & Heritage Hotels', desc: 'Cultural tourism and unique Ethiopian experiences for international visitors', potential: '$400M market size' },
+                    { title: 'Restaurant & Food Services', desc: 'Growing dining culture and international cuisine demand', potential: '$600M market potential' },
+                    { title: 'Event & Wedding Venues', desc: 'Rising middle class driving demand for premium event spaces', potential: '$200M opportunity' },
+                    { title: 'Tourism Services & Experiences', desc: 'Tour operators, cultural experiences, and adventure tourism', potential: '$300M market' },
+                    { title: 'Wellness & Spa Services', desc: 'Growing health and wellness tourism segment', potential: '$150M potential' }
+                ],
+                advantages: [
+                    'Diplomatic capital of Africa with constant international visitors',
+                    'Home to African Union headquarters and 120+ embassies',
+                    'Gateway to Ethiopia\'s UNESCO World Heritage sites',
+                    'Growing middle class with increasing disposable income',
+                    'Bole International Airport - major African aviation hub',
+                    'Year-round pleasant climate and high altitude location',
+                    'Rich cultural heritage and unique Ethiopian experiences',
+                    'Government support for tourism development'
+                ],
+                faqs: [
+                    { q: "What makes Addis Ababa attractive for hospitality investments?", a: "Addis Ababa is Africa's diplomatic capital with 120+ embassies, AU headquarters, constant international conferences, and over 1.2M annual visitors. This creates consistent demand for quality hospitality services." },
+                    { q: "What is the current state of the hotel and restaurant market?", a: "The market has 200+ hotels with 15,000+ rooms, but demand exceeds supply especially in the 4-5 star segment. Restaurant market is growing 20% annually with increasing demand for diverse cuisines." },
+                    { q: "What are the key tourist attractions and experiences?", a: "Addis offers rich cultural heritage, National Museum (Lucy fossil), Merkato (largest market in Africa), traditional coffee ceremonies, vibrant nightlife, and serves as gateway to historical sites like Lalibela and Axum." },
+                    { q: "What government support exists for tourism investments?", a: "Government provides tax incentives for tourism projects, simplified licensing for hotels and restaurants, tourism development zones, and marketing support through Ethiopian Tourism Organization." },
+                    { q: "What are the licensing requirements for hospitality businesses?", a: "Hotels need tourism business licenses, building permits, fire safety certificates, and health permits. Restaurants require trade licenses, health permits, and liquor licenses if serving alcohol." },
+                    { q: "What is the investment potential and ROI expectations?", a: "Quality hotels achieve 70-80% occupancy rates with average daily rates of $80-150. Restaurant investments typically see 15-25% ROI. The market is growing 15% annually with strong fundamentals." },
+                    { q: "How is the tourism infrastructure and connectivity?", a: "Bole International Airport serves 60+ destinations, new light rail system, improving road infrastructure, and growing telecommunications. Ethiopian Airlines provides excellent regional and international connectivity." },
+                    { q: "What are the challenges and risks in this sector?", a: "Main challenges include skilled staff shortage, infrastructure gaps in some areas, and seasonal demand fluctuations. However, government investment in infrastructure and training programs are addressing these issues." }
+                ]
+            },
+            'agribusiness': {
+                title: 'Agribusiness Investment Opportunities',
+                icon: '🌱',
+                color: 'yellow',
+                description: 'Coffee processing, horticulture, and agricultural value chain development',
+                overview: 'Ethiopia\'s agribusiness sector presents exceptional investment opportunities, with agriculture employing 80% of the population and contributing 35% to GDP. As the birthplace of coffee and with diverse agro-ecological zones, Ethiopia offers unique opportunities in coffee processing, horticulture, livestock, and agricultural value chain development. The growing domestic market and export potential to regional and international markets create substantial opportunities for agribusiness investors.',
+                keyOpportunities: [
+                    { title: 'Coffee Processing & Export', desc: 'World\'s 5th largest coffee producer with premium Arabica varieties and growing specialty coffee market', potential: '$1.2B export market' },
+                    { title: 'Horticulture & Floriculture', desc: 'Year-round production capability with proximity to European markets via air freight', potential: '$800M market opportunity' },
+                    { title: 'Livestock & Meat Processing', desc: 'Africa\'s largest livestock population with growing domestic and export demand', potential: '$2B market potential' },
+                    { title: 'Grain Processing & Storage', desc: 'Major cereals producer with need for modern processing and storage facilities', potential: '$600M market size' },
+                    { title: 'Dairy Processing', desc: 'Growing urban demand for processed dairy products and value-added items', potential: '$400M opportunity' },
+                    { title: 'Spices & Herbs Processing', desc: 'Traditional spice producer with export potential for processed and packaged products', potential: '$300M market potential' },
+                    { title: 'Agricultural Inputs & Services', desc: 'Seeds, fertilizers, machinery, and extension services for modernizing agriculture', potential: '$500M market' },
+                    { title: 'Organic & Specialty Foods', desc: 'Growing international demand for organic and specialty Ethiopian products', potential: '$250M export potential' }
+                ],
+                advantages: [
+                    'Diverse agro-ecological zones enabling year-round production',
+                    'Birthplace of coffee with unique Arabica varieties',
+                    'Africa\'s largest livestock population (65M cattle, 40M sheep/goats)',
+                    'Abundant water resources and fertile soils',
+                    'Low production costs and competitive labor',
+                    'Growing domestic market of 120M people',
+                    'Strategic location for regional export markets',
+                    'Government priority sector with strong support',
+                    'Preferential trade access to EU, US, and regional markets',
+                    'Untapped potential in value addition and processing'
+                ],
+                faqs: [
+                    { q: "What makes Ethiopia attractive for agribusiness investments?", a: "Ethiopia offers diverse agro-ecological zones, year-round production capability, abundant natural resources, low costs, large domestic market, and strong government support. It\'s the birthplace of coffee and has Africa\'s largest livestock population." },
+                    { q: "What is Ethiopia\'s position in global coffee markets?", a: "Ethiopia is the world\'s 5th largest coffee producer and birthplace of Arabica coffee. It produces unique varieties like Yirgacheffe and Sidamo, with growing specialty coffee exports worth $800M+ annually and significant value-addition potential." },
+                    { q: "What are the key agricultural products and their potential?", a: "Major products include coffee ($800M exports), livestock (65M cattle), cereals (25M tons), pulses ($300M exports), oilseeds, spices, fruits, and vegetables. Each sector offers significant processing and value-addition opportunities." },
+                    { q: "What government support exists for agribusiness?", a: "Government provides tax incentives for agro-processing, subsidized land lease rates, duty-free machinery imports, export incentives, agricultural development zones, and support through Agricultural Transformation Agency and investment promotion." },
+                    { q: "What are the land acquisition and leasing options?", a: "Foreign investors can lease agricultural land for up to 99 years at competitive rates. Government facilitates land access through regional investment offices and agricultural development zones with infrastructure support." },
+                    { q: "What infrastructure exists for agribusiness?", a: "Ethiopia has developing cold chain facilities, Bole International Airport for perishable exports, improving road networks, agricultural industrial parks, and growing processing facilities. Government is investing heavily in rural infrastructure." },
+                    { q: "What are the export markets and logistics?", a: "Ethiopia exports to EU (flowers, coffee), Middle East (livestock, grains), regional markets (processed foods), and growing markets in Asia. Ethiopian Airlines provides excellent cargo connectivity to global markets." },
+                    { q: "What are the minimum investment requirements?", a: "Agribusiness investments require minimum $100K for foreign investors, with additional incentives for investments above $500K. Processing and value-addition projects receive priority support and extended tax holidays." },
+                    { q: "How do we ensure quality and certification?", a: "Ethiopia has growing certification bodies for organic, fair trade, and quality standards. Government supports quality improvement through Ethiopian Standards Agency and export quality control systems." },
+                    { q: "What are the main challenges and risk mitigation?", a: "Main challenges include climate variability, infrastructure gaps, and market access. Mitigation includes crop insurance, diversified production, contract farming, and government infrastructure investments addressing these issues." }
+                ]
+            },
+            'construction': {
+                title: 'Construction Investment Opportunities',
+                icon: '🏗️',
+                color: 'red',
+                description: 'Real estate development, infrastructure projects, and building materials',
+                overview: 'Ethiopia\'s construction sector is experiencing unprecedented growth, driven by rapid urbanization, massive infrastructure development, and a growing middle class. Addis Ababa, as the fastest-growing capital in Africa, presents exceptional opportunities in real estate development, infrastructure projects, and construction materials manufacturing. The government\'s ambitious infrastructure agenda and urban development plans create substantial opportunities for construction investors.',
+                keyOpportunities: [
+                    { title: 'Residential Real Estate', desc: 'Massive housing shortage with 400,000+ unit deficit in Addis Ababa alone, growing middle class demand', potential: '$8B market opportunity' },
+                    { title: 'Commercial Real Estate', desc: 'Office buildings, shopping centers, and mixed-use developments for expanding business sector', potential: '$3B market size' },
+                    { title: 'Industrial Construction', desc: 'Factories, warehouses, and industrial facilities for manufacturing growth', potential: '$2B market potential' },
+                    { title: 'Infrastructure Projects', desc: 'Roads, bridges, utilities, and public infrastructure development contracts', potential: '$15B government pipeline' },
+                    { title: 'Building Materials Manufacturing', desc: 'Cement, steel, tiles, and construction materials for domestic and regional markets', potential: '$4B market opportunity' },
+                    { title: 'Affordable Housing', desc: 'Government-supported affordable housing programs and social housing projects', potential: '$5B market size' },
+                    { title: 'Green Building & Sustainable Construction', desc: 'Energy-efficient buildings and sustainable construction technologies', potential: '$1B emerging market' },
+                    { title: 'Construction Equipment & Services', desc: 'Heavy machinery, construction services, and project management', potential: '$2B market potential' }
+                ],
+                advantages: [
+                    'Fastest urbanization rate in Africa with 4.5% annual growth',
+                    'Massive infrastructure investment program ($40B+ planned)',
+                    'Growing middle class driving housing demand',
+                    'Government priority sector with strong policy support',
+                    'Abundant local raw materials (limestone, clay, aggregates)',
+                    'Strategic location for regional construction material exports',
+                    'Low labor costs and growing skilled workforce',
+                    'Condominium and affordable housing programs creating demand',
+                    'Industrial park development driving commercial construction',
+                    'Foreign investment incentives and streamlined approvals'
+                ],
+                faqs: [
+                    { q: "What makes Ethiopia attractive for construction investments?", a: "Ethiopia offers the fastest urbanization in Africa, massive infrastructure development ($40B+ pipeline), growing middle class, government support, abundant raw materials, and strategic regional location with low costs." },
+                    { q: "What is the current state of the construction market?", a: "The construction sector contributes 5.5% to GDP and grows 15-20% annually. Addis Ababa has 400,000+ housing unit shortage, massive commercial development, and $15B+ infrastructure projects planned." },
+                    { q: "What are the key construction sub-sectors and their potential?", a: "Major opportunities include residential ($8B), commercial ($3B), industrial ($2B), infrastructure ($15B), building materials ($4B), and affordable housing ($5B) with strong growth across all segments." },
+                    { q: "What government support exists for construction investments?", a: "Government provides tax incentives for construction, streamlined building permits, land lease facilitation, affordable housing partnerships, infrastructure PPP opportunities, and duty-free machinery imports." },
+                    { q: "What are the land acquisition and development processes?", a: "Foreign investors can lease land for up to 99 years. Government facilitates land access through city administration, provides serviced plots in development areas, and offers competitive lease rates for construction projects." },
+                    { q: "What infrastructure and utilities are available?", a: "Addis Ababa has expanding electricity grid, water supply systems, telecommunications, road networks, and waste management. New developments include light rail, ring roads, and utility expansions." },
+                    { q: "What are the building standards and regulations?", a: "Ethiopia follows international building codes with local adaptations. Requirements include building permits, environmental assessments, safety standards, and quality control. Government is modernizing building codes." },
+                    { q: "What financing options are available for construction?", a: "Financing includes local bank loans, development finance institutions, government housing funds, international project finance, and public-private partnerships for infrastructure projects." },
+                    { q: "What are the minimum investment requirements?", a: "Construction investments require minimum $200K for foreign investors, with additional incentives for investments above $1M. Real estate development and infrastructure projects receive priority support." },
+                    { q: "How do we ensure quality and manage construction risks?", a: "Risk mitigation includes proper due diligence, quality contractors, insurance coverage, phased development, and compliance with building standards. Government provides construction quality oversight and certification." },
+                    { q: "What are the market opportunities for building materials?", a: "Strong demand for cement (8M+ tons annually), steel, tiles, fixtures, and finishing materials. Local production reduces imports and serves regional markets. Government supports local manufacturing with incentives." },
+                    { q: "What are the main challenges and how to address them?", a: "Main challenges include skilled labor shortages, material cost fluctuations, and regulatory processes. Solutions include training programs, long-term supplier contracts, and working with experienced local partners." }
+                ]
+            },
+            'energy': {
+                title: 'Energy Investment Opportunities',
+                icon: '⚡',
+                color: 'indigo',
+                description: 'Renewable energy projects, solar installations, and energy efficiency solutions',
+                overview: 'Ethiopia\'s energy sector presents exceptional investment opportunities, driven by massive infrastructure development, growing industrial demand, and the government\'s commitment to renewable energy. With abundant renewable resources including hydroelectric, solar, wind, and geothermal potential, Ethiopia aims to become a regional energy hub. The country\'s ambitious plans to achieve universal electricity access and export surplus power create substantial opportunities for energy investors.',
+                keyOpportunities: [
+                    { title: 'Solar Power Projects', desc: 'Abundant solar resources with 2,200+ hours of sunshine annually, utility-scale and distributed solar opportunities', potential: '$3B market opportunity' },
+                    { title: 'Wind Energy Development', desc: 'Excellent wind resources in Rift Valley and highlands, large-scale wind farm potential', potential: '$2B market size' },
+                    { title: 'Hydroelectric Power', desc: 'Massive hydroelectric potential with numerous river systems and government support', potential: '$5B market potential' },
+                    { title: 'Geothermal Energy', desc: 'Significant geothermal resources in Rift Valley with untapped potential', potential: '$1.5B opportunity' },
+                    { title: 'Energy Storage Solutions', desc: 'Battery storage systems for grid stability and renewable energy integration', potential: '$800M market' },
+                    { title: 'Energy Efficiency Services', desc: 'Industrial energy efficiency, smart grids, and demand management solutions', potential: '$600M market size' },
+                    { title: 'Mini-Grid & Off-Grid Solutions', desc: 'Rural electrification through mini-grids and standalone systems', potential: '$1B market potential' },
+                    { title: 'Energy Equipment Manufacturing', desc: 'Local manufacturing of solar panels, wind turbines, and energy equipment', potential: '$700M opportunity' }
+                ],
+                advantages: [
+                    'Abundant renewable energy resources (45,000 MW potential)',
+                    'Government commitment to 100% renewable electricity by 2030',
+                    'Strategic location for regional energy export markets',
+                    'Growing industrial demand driving energy consumption',
+                    'Supportive policy framework and renewable energy incentives',
+                    'Low-cost renewable energy development opportunities',
+                    'Access to international climate finance and carbon markets',
+                    'Established energy regulatory framework and institutions',
+                    'Regional power trade agreements and interconnection projects',
+                    'Young skilled workforce and growing technical capacity'
+                ],
+                faqs: [
+                    { q: "What makes Ethiopia attractive for energy investments?", a: "Ethiopia offers abundant renewable resources (45,000 MW potential), government commitment to 100% renewable electricity, growing demand, supportive policies, low development costs, and strategic location for regional energy trade." },
+                    { q: "What is Ethiopia\'s current energy situation and growth potential?", a: "Ethiopia has 4,500 MW installed capacity with 90%+ from renewables. Demand grows 25-30% annually. Government targets 17,000 MW by 2030 and universal access by 2025, creating massive investment opportunities." },
+                    { q: "What are the key renewable energy resources available?", a: "Ethiopia has exceptional solar (5-7 kWh/m²/day), wind (7-10 m/s), hydroelectric (45,000 MW potential), and geothermal (10,000 MW potential) resources across different regions." },
+                    { q: "What government support exists for energy investments?", a: "Government provides tax incentives for renewable energy, streamlined licensing, land lease facilitation, power purchase agreements, duty-free equipment imports, and access to climate finance mechanisms." },
+                    { q: "What are the power market structure and regulations?", a: "Ethiopian Electric Power manages generation and transmission, while Ethiopian Electric Utility handles distribution. Independent Power Producer (IPP) framework allows private investment with competitive bidding and PPAs." },
+                    { q: "What financing options are available for energy projects?", a: "Financing includes development finance institutions, climate funds, commercial banks, export credit agencies, blended finance, and carbon credit revenues. Government facilitates access to international climate finance." },
+                    { q: "What are the grid connection and power evacuation capabilities?", a: "Ethiopia has expanding transmission network with regional interconnections to Kenya, Sudan, and Djibouti. New transmission lines and substations support renewable energy integration and regional power trade." },
+                    { q: "What are the minimum investment requirements and project sizes?", a: "Energy investments require minimum $500K for foreign investors. Utility-scale projects range from 10-500 MW, while distributed and mini-grid projects can be smaller with government support programs." },
+                    { q: "How do we navigate the licensing and approval process?", a: "Energy projects require generation licenses from Ethiopian Energy Authority, environmental permits, land lease agreements, and grid connection approvals. We provide full support through the regulatory process." },
+                    { q: "What are the regional energy export opportunities?", a: "Ethiopia has power export agreements with Kenya, Sudan, and Djibouti. Regional demand exceeds 10,000 MW with plans for Eastern Africa Power Pool integration, creating substantial export revenue potential." },
+                    { q: "What local content and technology transfer requirements exist?", a: "Government encourages local content development, technology transfer, and skills development. Opportunities exist for local manufacturing, maintenance services, and capacity building partnerships." },
+                    { q: "What are the main challenges and risk mitigation strategies?", a: "Main challenges include grid integration, financing, and technical capacity. Mitigation includes phased development, international partnerships, technical assistance, and comprehensive risk insurance options." }
+                ]
+            },
+            'healthcare': {
+                title: 'Healthcare Investment Opportunities',
+                icon: '🏥',
+                color: 'pink',
+                description: 'Medical facilities, pharmaceutical manufacturing, and health technology services',
+                overview: 'Ethiopia\'s healthcare sector presents exceptional investment opportunities, driven by a growing population of 120 million, increasing healthcare awareness, and significant government investment in health infrastructure. With one of the lowest doctor-to-patient ratios globally (1:10,000) and expanding health insurance coverage through the Social Health Insurance scheme, the sector offers substantial opportunities for private healthcare providers, pharmaceutical manufacturers, and health technology companies. The government\'s commitment to achieving Universal Health Coverage by 2030 creates a supportive environment for private sector participation.',
+                keyOpportunities: [
+                    { title: 'Private Hospitals & Medical Centers', desc: 'Massive shortage of quality healthcare facilities with growing middle class demand for private healthcare services', potential: '$2.5B market opportunity' },
+                    { title: 'Pharmaceutical Manufacturing', desc: 'Local production to reduce 85% import dependency and serve East African regional markets', potential: '$1.2B market size' },
+                    { title: 'Medical Equipment & Devices', desc: 'Growing demand for modern medical equipment, diagnostic devices, and medical supplies', potential: '$600M market potential' },
+                    { title: 'Health Technology & Telemedicine', desc: 'Digital health solutions, electronic health records, and telemedicine for underserved populations', potential: '$400M opportunity' },
+                    { title: 'Specialized Healthcare Services', desc: 'Cardiology, oncology, orthopedics, dialysis centers, and other specialized medical services', potential: '$800M market' },
+                    { title: 'Medical Education & Training', desc: 'Private medical schools, nursing colleges, and healthcare professional training programs', potential: '$300M market size' },
+                    { title: 'Diagnostic & Laboratory Services', desc: 'Modern diagnostic centers, pathology labs, and medical imaging facilities', potential: '$400M market potential' },
+                    { title: 'Maternal & Child Health', desc: 'Specialized maternity hospitals, pediatric care, and reproductive health services', potential: '$500M opportunity' },
+                    { title: 'Mental Health Services', desc: 'Psychiatric hospitals, counseling centers, and mental health support services', potential: '$200M emerging market' },
+                    { title: 'Medical Tourism', desc: 'Attracting regional patients for specialized treatments and procedures', potential: '$150M regional market' }
+                ],
+                advantages: [
+                    'Large underserved population of 120 million with growing healthcare needs',
+                    'Severe shortage of healthcare facilities (0.3 hospital beds per 1,000 people)',
+                    'Growing middle class with 15% annual increase in healthcare spending',
+                    'Government commitment to Universal Health Coverage by 2030',
+                    'Strategic location serving 400M+ people in East Africa region',
+                    'Low competition in specialized healthcare services and medical specialties',
+                    'Supportive government policies including tax incentives for private healthcare',
+                    'Expanding health insurance coverage creating sustainable payment mechanisms',
+                    'Young population (70% under 30) driving long-term healthcare demand',
+                    'Abundant medical raw materials and pharmaceutical ingredients locally available',
+                    'Growing medical tourism potential from neighboring countries',
+                    'Established medical education system producing healthcare professionals'
+                ],
+                faqs: [
+                    { q: "What makes Ethiopia attractive for healthcare investments?", a: "Ethiopia offers a large underserved population (120M), severe healthcare shortage (1 doctor per 10,000 people), growing middle class healthcare spending, government Universal Health Coverage commitment, strategic regional location, and significant opportunities in underserved medical specialties with strong government support." },
+                    { q: "What is the current state of Ethiopia\'s healthcare system and demand?", a: "Ethiopia has 0.3 hospital beds per 1,000 people (WHO recommends 2.5), 1 doctor per 10,000 people, and 85% pharmaceutical import dependency. Healthcare spending grows 15% annually with expanding insurance coverage creating massive private sector opportunities." },
+                    { q: "What are the key healthcare challenges creating investment opportunities?", a: "Major gaps include insufficient hospital capacity, limited specialized services, inadequate diagnostic facilities, pharmaceutical supply shortages, rural healthcare access, and medical equipment shortages. These challenges represent substantial market opportunities for private investors." },
+                    { q: "What government support exists for healthcare investments?", a: "Government provides 5-8 year tax holidays for healthcare investments, streamlined licensing through one-stop-shop, duty-free medical equipment imports, public-private partnership opportunities, land lease facilitation, and support for medical education and training programs." },
+                    { q: "What are the licensing and regulatory requirements for healthcare facilities?", a: "Healthcare facilities require licenses from Ministry of Health, Ethiopian Food and Drug Authority permits, building permits, environmental clearances, professional licensing for medical staff, and compliance with Ethiopian healthcare standards. We provide comprehensive regulatory support throughout the process." },
+                    { q: "What investment opportunities exist in pharmaceutical manufacturing?", a: "Opportunities include generic drug manufacturing ($400M market), medical supplies production ($200M), pharmaceutical distribution networks, API manufacturing, and medical device assembly. Government supports local production with incentives and import substitution policies." },
+                    { q: "How large is the healthcare market and what are the growth projections?", a: "Ethiopia\'s healthcare market is valued at $4.5B and growing 12-15% annually. Private healthcare spending reaches $2B with projections of $8B by 2030. Government health budget exceeds $1.5B annually with increasing private sector participation." },
+                    { q: "What are the minimum investment requirements and project sizes?", a: "Healthcare investments require minimum $200K for foreign investors. Hospital projects range from $2-50M, pharmaceutical manufacturing $5-20M, clinics $500K-5M, and diagnostic centers $1-10M with government incentives for larger investments." },
+                    { q: "What medical specialties have the highest demand and investment potential?", a: "High-demand specialties include cardiology, oncology, orthopedics, nephrology, neurology, pediatrics, obstetrics/gynecology, and emergency medicine. These specialties have limited availability and strong market demand from growing middle class." },
+                    { q: "How do we ensure quality standards and international accreditation?", a: "Ethiopia follows WHO standards with Ethiopian Healthcare Quality Directorate oversight. International accreditation available through JCI, ISO, and other bodies. We ensure compliance with international quality standards and facilitate accreditation processes." },
+                    { q: "What are the healthcare workforce and staffing considerations?", a: "Ethiopia produces 3,000+ medical graduates annually from 35+ medical schools. Growing nursing and allied health programs. Opportunities exist for international staff recruitment and local capacity building with government support for medical education." },
+                    { q: "What health insurance and payment mechanisms exist?", a: "Ethiopia is implementing Social Health Insurance covering formal sector employees, Community-Based Health Insurance for rural areas, and private insurance growth. Out-of-pocket payments remain significant (35% of health spending) with growing insurance coverage." },
+                    { q: "What are the regional market opportunities for healthcare services?", a: "Ethiopia serves as regional hub for 400M+ people in East Africa. Medical tourism potential from Sudan, South Sudan, Somalia, and Djibouti. Regional pharmaceutical export opportunities and specialized treatment referrals create substantial cross-border revenue potential." },
+                    { q: "What technology and digital health opportunities exist?", a: "Growing opportunities in telemedicine, electronic health records, mobile health applications, diagnostic technology, health information systems, and digital payment platforms. Government supports digital health initiatives and technology adoption in healthcare delivery." },
+                    { q: "What are the main challenges and risk mitigation strategies?", a: "Main challenges include regulatory complexity, skilled staff shortages, infrastructure limitations, and payment collection. Mitigation includes comprehensive regulatory support, staff training programs, phased development approaches, and diversified payment mechanisms including insurance partnerships." }
+                ]
+            },
+            'manufacturing': {
+                title: 'Manufacturing Investment Opportunities',
+                icon: '🏭',
+                color: 'blue',
+                description: 'Textiles, leather goods, food processing, and light manufacturing with access to regional markets',
+                overview: 'Ethiopia\'s manufacturing sector offers exceptional opportunities for investors, particularly in Addis Ababa where infrastructure, skilled labor, and market access converge. The government\'s commitment to industrialization, combined with competitive labor costs and preferential trade agreements, creates an ideal environment for manufacturing investments.',
+                keyOpportunities: [
+                    { title: 'Textile & Apparel', desc: 'Leverage Ethiopia\'s cotton production and AGOA benefits for export to US markets', potential: '$2B market' },
+                    { title: 'Leather & Leather Products', desc: 'World\'s 5th largest livestock population provides abundant raw materials', potential: '$500M export potential' },
+                    { title: 'Food Processing', desc: 'Growing domestic market and export opportunities to regional markets', potential: '$1.5B market size' },
+                    { title: 'Pharmaceuticals', desc: 'Regional hub potential with growing healthcare demand', potential: '$300M market' },
+                    { title: 'Construction Materials', desc: 'Massive infrastructure development driving demand', potential: '$800M market' },
+                    { title: 'Electronics Assembly', desc: 'Growing consumer electronics market and export potential', potential: '$400M opportunity' }
+                ],
+                advantages: [
+                    'Competitive labor costs (average $50-80/month)',
+                    'Duty-free access to US, EU, and regional markets',
+                    'Abundant raw materials and agricultural inputs',
+                    'Government incentives and industrial park facilities',
+                    'Strategic location for regional market access',
+                    'Growing domestic consumer market of 120M people'
+                ],
+                faqs: [
+                    { q: "What are the key advantages of manufacturing in Ethiopia?", a: "Ethiopia offers competitive labor costs, duty-free market access through AGOA and EBA, abundant raw materials, government incentives, and strategic location for regional exports." },
+                    { q: "What infrastructure is available for manufacturers?", a: "Ethiopia has developed industrial parks with reliable power, water, telecommunications, and logistics support. Major parks include Bole Lemi, Kilinto, and Eastern Industry Zone." },
+                    { q: "What are the minimum investment requirements?", a: "Manufacturing investments require minimum $200K for foreign investors, with additional incentives available for investments above $2M in priority sectors." },
+                    { q: "How skilled is the Ethiopian workforce?", a: "Ethiopia has a young, trainable workforce with growing technical skills. The government invests heavily in TVET programs to develop manufacturing-ready skills." },
+                    { q: "What export markets can we access?", a: "Ethiopia has preferential access to US (AGOA), EU (EBA), and regional markets (COMESA). This provides duty-free access to markets worth over $20 trillion." },
+                    { q: "What government support is available?", a: "Government provides tax holidays (2-7 years), duty-free imports of machinery, export incentives, and facilitated land access in industrial parks." }
+                ]
+            },
+            'education': {
+                title: 'Education Investment Opportunities',
+                icon: '🎓',
+                color: 'teal',
+                description: 'Private schools, vocational training, and educational technology platforms',
+                overview: 'Ethiopia\'s education sector presents exceptional investment opportunities, driven by a young population of 120 million with 70% under age 30, growing middle class demand for quality education, and government commitment to expanding access to education. With over 25 million students in the education system and significant gaps in quality private education, vocational training, and educational technology, the sector offers substantial opportunities for private investors across all education levels from early childhood to higher education and professional development.',
+                keyOpportunities: [
+                    { title: 'Private Schools (K-12)', desc: 'International schools, private primary and secondary schools serving growing middle class families seeking quality education', potential: '$1.5B market opportunity' },
+                    { title: 'Higher Education & Universities', desc: 'Private universities, colleges, and specialized institutes offering undergraduate and graduate programs', potential: '$800M market size' },
+                    { title: 'Vocational & Technical Training', desc: 'TVET institutes, skills training centers, and certification programs for Ethiopia\'s growing industrial workforce', potential: '$600M market potential' },
+                    { title: 'Educational Technology & E-Learning', desc: 'Digital learning platforms, online courses, educational apps, and learning management systems', potential: '$300M opportunity' },
+                    { title: 'Early Childhood Education', desc: 'Kindergartens, preschools, and daycare centers for working parents in urban areas', potential: '$400M market' },
+                    { title: 'Language & Test Preparation', desc: 'English language institutes, IELTS/TOEFL prep centers, and foreign language training', potential: '$200M market size' },
+                    { title: 'Professional Development & Training', desc: 'Executive education, corporate training, professional certifications, and continuing education', potential: '$350M market potential' },
+                    { title: 'Educational Support Services', desc: 'Tutoring centers, educational consulting, curriculum development, and teacher training', potential: '$250M opportunity' },
+                    { title: 'Educational Infrastructure & Supplies', desc: 'School construction, educational equipment, textbooks, and learning materials manufacturing', potential: '$700M market' },
+                    { title: 'Special Needs & Inclusive Education', desc: 'Schools and programs for students with disabilities and special educational needs', potential: '$150M emerging market' }
+                ],
+                advantages: [
+                    'Massive student population of 25+ million across all education levels',
+                    'Young demographic with 70% of population under age 30 driving education demand',
+                    'Growing middle class with 15% annual increase in education spending',
+                    'Government policy supporting private sector participation in education',
+                    'Significant quality gaps in public education creating private sector opportunities',
+                    'Strategic location serving regional education market of 400M+ people',
+                    'Low operational costs with competitive teacher salaries and facility costs',
+                    'Strong cultural emphasis on education and academic achievement',
+                    'Expanding urban population concentrated in major cities',
+                    'Government investment in education infrastructure supporting sector growth',
+                    'Growing demand for English language and international curriculum',
+                    'Increasing corporate training needs as economy modernizes'
+                ],
+                faqs: [
+                    { q: "What makes Ethiopia attractive for education investments?", a: "Ethiopia offers a massive student population (25M+), young demographics (70% under 30), growing middle class education spending (15% annual increase), government support for private education, significant quality gaps in public system, strategic regional location, and low operational costs with strong cultural emphasis on education." },
+                    { q: "What is the current state of Ethiopia\'s education system?", a: "Ethiopia has 25M+ students across all levels with 95% primary enrollment but quality challenges. Private education serves 15% of students and grows 20% annually. Higher education has 50+ universities but limited capacity. Significant opportunities exist in quality private education at all levels." },
+                    { q: "What are the licensing and regulatory requirements for schools?", a: "Educational institutions require licenses from Ministry of Education, regional education bureaus, building permits, curriculum approval, teacher certification, and compliance with national education standards. Process takes 3-6 months with proper documentation and support." },
+                    { q: "What is the demand for private education across different levels?", a: "Strong demand exists at all levels: K-12 private schools (20% annual growth), higher education (300,000+ students seeking university admission annually), vocational training (growing industrial workforce needs), and professional development (expanding corporate sector requirements)." },
+                    { q: "What government support exists for education investments?", a: "Government provides 5-8 year tax holidays for education investments, streamlined licensing through one-stop-shop, duty-free imports of educational equipment, land lease facilitation, public-private partnership opportunities, and encourages foreign investment in education sector." },
+                    { q: "What are the minimum investment requirements and typical project sizes?", a: "Education investments require minimum $100K for foreign investors. Typical projects: K-12 schools ($500K-5M), universities ($5-50M), vocational centers ($200K-2M), language institutes ($100K-500K), and EdTech platforms ($50K-1M) with government incentives for larger investments." },
+                    { q: "What curriculum and language of instruction options are available?", a: "Schools can offer Ethiopian national curriculum, international curricula (British, American, IB), or blended programs. Languages include English, Amharic, and regional languages. International schools with English instruction are particularly in demand among middle class families." },
+                    { q: "What is the teacher availability and qualification situation?", a: "Ethiopia produces 50,000+ university graduates annually including education graduates. Teacher training colleges exist nationwide. Opportunities exist for international teacher recruitment and local teacher professional development programs with competitive salary packages." },
+                    { q: "What are the key urban markets for education investments?", a: "Primary markets include Addis Ababa (4M+ population), Dire Dawa, Mekelle, Bahir Dar, Hawassa, and Adama. Addis Ababa offers the largest market with highest concentration of middle class families and international community seeking quality education." },
+                    { q: "What technology and digital learning opportunities exist?", a: "Growing opportunities in educational technology including online learning platforms, digital content development, learning management systems, educational apps, and blended learning solutions. Government supports digital education initiatives and technology integration in schools." },
+                    { q: "What are the vocational and technical education opportunities?", a: "Strong demand for TVET programs in manufacturing, construction, healthcare, hospitality, ICT, and agriculture. Government prioritizes skills development for industrial growth. Opportunities include establishing TVET institutes, corporate training centers, and certification programs." },
+                    { q: "How do we ensure quality and accreditation for educational institutions?", a: "Quality assurance through Ministry of Education standards, international accreditation bodies (Cambridge, IB, etc.), teacher certification programs, and continuous improvement systems. We assist with quality framework development and accreditation processes." },
+                    { q: "What financing and payment models work in Ethiopian education?", a: "Payment models include semester/annual fees, installment plans, scholarship programs, and corporate sponsorships. Growing acceptance of education loans and financing options. Fee ranges: K-12 ($500-3000/year), universities ($1000-5000/year), vocational programs ($200-1000/program)." },
+                    { q: "What are the main challenges and risk mitigation strategies?", a: "Main challenges include regulatory compliance, teacher recruitment, infrastructure development, and fee collection. Mitigation includes comprehensive regulatory support, teacher training programs, phased development, diversified revenue streams, and strong financial management systems." },
+                    { q: "What regional and international education opportunities exist?", a: "Ethiopia serves as regional education hub with students from neighboring countries. Opportunities include establishing branch campuses, distance learning programs, professional development for regional markets, and partnerships with international educational institutions for program delivery." }
+                ]
+            }
+        };
+
+        // Mobile Menu
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('open');
+        }
+
+        // Smooth scrolling
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        // Service page functionality
+        function openServicePage(serviceId) {
+            const service = serviceData[serviceId];
+            if (!service) return;
+            
+            // Hide main website
+            document.getElementById('mainWebsite').style.display = 'none';
+            
+            // Show service page
+            document.getElementById('servicePage').classList.remove('hidden');
+            
+            // Generate service content
+            const serviceContent = document.getElementById('serviceContent');
+            serviceContent.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <!-- Header -->
+                    <div class="bg-${service.color}-600 text-white p-8">
+                        <div class="flex items-center mb-4">
+                            <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-6">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${service.icon}"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h1 class="text-3xl font-bold">${service.title}</h1>
+                                <p class="text-${service.color}-100 text-lg mt-2">${service.description}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-8">
+                        <!-- What is this service -->
+                        <div class="mb-12">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">What is ${service.title.replace(' Services', '')}?</h2>
+                            <p class="text-gray-600 text-lg leading-relaxed">${service.whatIs}</p>
+                        </div>
+                        
+                        <!-- Our Services -->
+                        <div class="mb-12">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6">Our Services</h2>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                ${service.services.map(item => `
+                                    <div class="bg-gray-50 rounded-lg p-6">
+                                        <h3 class="font-semibold text-gray-800 mb-2">${item.title}</h3>
+                                        <p class="text-gray-600">${item.desc}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Section -->
+                        <div class="mb-12">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6">Frequently Asked Questions</h2>
+                            <div class="space-y-4">
+                                ${service.faqs.map((faq, index) => `
+                                    <div class="faq-item border border-gray-200 rounded-lg">
+                                        <button onclick="toggleFAQ(${index})" class="w-full text-left p-6 flex justify-between items-center hover:bg-gray-50 transition-colors">
+                                            <span class="font-semibold text-gray-800">${faq.q}</span>
+                                            <svg class="w-5 h-5 text-gray-500 transform transition-transform" id="faq-icon-${index}">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </button>
+                                        <div class="faq-answer px-6 pb-6" id="faq-answer-${index}">
+                                            <p class="text-gray-600">${faq.a}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <!-- Contact CTA -->
+                        <div class="bg-${service.color}-50 rounded-lg p-8 text-center">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">Ready to Get Started?</h3>
+                            <p class="text-gray-600 mb-6">Contact our expert team to discuss your ${service.title.toLowerCase()} needs and develop a customized solution for your business.</p>
+                            <div class="space-x-4">
+                                <button onclick="scrollToSection('contact')" class="bg-${service.color}-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-${service.color}-700 transition-colors">
+                                    Contact Us Today
+                                </button>
+                                <button onclick="openAuthModal('signup')" class="border-2 border-${service.color}-600 text-${service.color}-600 px-8 py-3 rounded-lg font-semibold hover:bg-${service.color}-600 hover:text-white transition-colors">
+                                    Schedule Consultation
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Opportunity page functionality
+        function openOpportunityPage(opportunityId) {
+            const opportunity = opportunityData[opportunityId];
+            if (!opportunity) return;
+            
+            // Hide main website
+            document.getElementById('mainWebsite').style.display = 'none';
+            
+            // Show opportunity page
+            document.getElementById('opportunityPage').classList.remove('hidden');
+            
+            // Generate opportunity content
+            const opportunityContent = document.getElementById('opportunityContent');
+            opportunityContent.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <!-- Header -->
+                    <div class="bg-gradient-to-r from-${opportunity.color}-600 to-${opportunity.color}-700 text-white p-8">
+                        <div class="flex items-center mb-4">
+                            <div class="text-6xl mr-6">${opportunity.icon}</div>
+                            <div>
+                                <h1 class="text-3xl font-bold">${opportunity.title}</h1>
+                                <p class="text-${opportunity.color}-100 text-lg mt-2">${opportunity.description}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-8">
+                        <!-- Overview -->
+                        <div class="mb-12">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">Market Overview</h2>
+                            <p class="text-gray-600 text-lg leading-relaxed">${opportunity.overview}</p>
+                        </div>
+                        
+                        <!-- Key Opportunities -->
+                        <div class="mb-12">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6">Key Investment Opportunities</h2>
+                            <div class="grid gap-6">
+                                ${opportunity.keyOpportunities.map(item => `
+                                    <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <h3 class="font-semibold text-gray-800 text-lg">${item.title}</h3>
+                                            <span class="bg-${opportunity.color}-100 text-${opportunity.color}-800 px-3 py-1 rounded-full text-sm font-medium">${item.potential}</span>
+                                        </div>
+                                        <p class="text-gray-600">${item.desc}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <!-- Competitive Advantages -->
+                        <div class="mb-12">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6">Why Invest in Ethiopia's ${opportunity.title.replace(' Investment Opportunities', '')} Sector?</h2>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                ${opportunity.advantages.map(advantage => `
+                                    <div class="flex items-start">
+                                        <div class="w-6 h-6 bg-${opportunity.color}-600 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                        <span class="text-gray-700">${advantage}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Section -->
+                        <div class="mb-12">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6">Investor Questions & Answers</h2>
+                            <div class="space-y-4">
+                                ${opportunity.faqs.map((faq, index) => `
+                                    <div class="faq-item border border-gray-200 rounded-lg">
+                                        <button onclick="toggleOpportunityFAQ(${index})" class="w-full text-left p-6 flex justify-between items-center hover:bg-gray-50 transition-colors">
+                                            <span class="font-semibold text-gray-800">${faq.q}</span>
+                                            <svg class="w-5 h-5 text-gray-500 transform transition-transform" id="opp-faq-icon-${index}">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </button>
+                                        <div class="faq-answer px-6 pb-6" id="opp-faq-answer-${index}">
+                                            <p class="text-gray-600">${faq.a}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <!-- Investment CTA -->
+                        <div class="bg-gradient-to-r from-${opportunity.color}-50 to-${opportunity.color}-100 rounded-lg p-8 text-center">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">Ready to Invest in ${opportunity.title.replace(' Investment Opportunities', '')}?</h3>
+                            <p class="text-gray-600 mb-6">Connect with our investment specialists to explore opportunities, conduct due diligence, and develop your investment strategy in Ethiopia's growing ${opportunity.title.replace(' Investment Opportunities', '').toLowerCase()} sector.</p>
+                            <div class="space-x-4">
+                                <button onclick="goBackToMain(); scrollToSection('contact');" class="bg-${opportunity.color}-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-${opportunity.color}-700 transition-colors">
+                                    Contact Investment Team
+                                </button>
+                                <button onclick="openAuthModal('signup')" class="border-2 border-${opportunity.color}-600 text-${opportunity.color}-600 px-8 py-3 rounded-lg font-semibold hover:bg-${opportunity.color}-600 hover:text-white transition-colors">
+                                    Schedule Site Visit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Go back to main website
+        function goBackToMain() {
+            document.getElementById('servicePage').classList.add('hidden');
+            document.getElementById('opportunityPage').classList.add('hidden');
+            document.getElementById('mainWebsite').style.display = 'block';
+        }
+
+        // FAQ toggle functionality
+        function toggleFAQ(index) {
+            const answer = document.getElementById(`faq-answer-${index}`);
+            const icon = document.getElementById(`faq-icon-${index}`);
+            
+            answer.classList.toggle('open');
+            icon.style.transform = answer.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        function toggleOpportunityFAQ(index) {
+            const answer = document.getElementById(`opp-faq-answer-${index}`);
+            const icon = document.getElementById(`opp-faq-icon-${index}`);
+            
+            answer.classList.toggle('open');
+            icon.style.transform = answer.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        // Authentication functions
+        function openAuthModal(type) {
+            const modal = document.getElementById('authModal');
+            const title = document.getElementById('authTitle');
+            const signinForm = document.getElementById('signinForm');
+            const signupForm = document.getElementById('signupForm');
+            
+            modal.classList.add('show');
+            
+            if (type === 'signin') {
+                title.textContent = 'Sign In';
+                signinForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            } else {
+                title.textContent = 'Create Account';
+                signinForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+            }
+            
+            // Initialize Google Sign-In buttons
+            setTimeout(initializeGoogleSignIn, 100);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('show');
+        }
+
+        function switchToSignIn() {
+            document.getElementById('authTitle').textContent = 'Sign In';
+            document.getElementById('signinForm').classList.remove('hidden');
+            document.getElementById('signupForm').classList.add('hidden');
+        }
+
+        function switchToSignUp() {
+            document.getElementById('authTitle').textContent = 'Create Account';
+            document.getElementById('signinForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.remove('hidden');
+        }
+
+        function handleEmailSignIn(event) {
+            event.preventDefault();
+            const email = document.getElementById('signinEmail').value;
+            const password = document.getElementById('signinPassword').value;
+            
+            // Find user in stored users
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                updateUIForSignedInUser(user);
+                closeAuthModal();
+                alert('Welcome back! You have successfully signed in.');
+            } else {
+                alert('Invalid email or password. Please try again or create a new account.');
+            }
+        }
+
+        function handleEmailSignUp(event) {
+            event.preventDefault();
+            const firstName = document.getElementById('signupFirstName').value;
+            const lastName = document.getElementById('signupLastName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match. Please try again.');
+                return;
+            }
+            
+            // Check if user already exists
+            if (users.find(u => u.email === email)) {
+                alert('An account with this email already exists. Please sign in instead.');
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                id: Date.now().toString(),
+                firstName,
+                lastName,
+                email,
+                password,
+                avatar: `https://ui-avatars.com/api/?name=${firstName}+${lastName}&background=3b82f6&color=fff`
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('aicoUsers', JSON.stringify(users));
+            
+            currentUser = newUser;
+            updateUIForSignedInUser(newUser);
+            closeAuthModal();
+            alert('Account created successfully! Welcome to AICO.');
+        }
+
+        function updateUIForSignedInUser(user) {
+            // Hide auth sections
+            document.getElementById('heroAuthSection').classList.add('hidden');
+            
+            // Show user sections
+            document.getElementById('heroUserSection').classList.remove('hidden');
+            document.getElementById('userSection').classList.remove('hidden');
+            document.getElementById('mobileUserSection').classList.remove('hidden');
+            
+            // Update user info in all locations
+            const userName = `${user.firstName} ${user.lastName}`;
+            document.getElementById('heroUserName').textContent = user.firstName;
+            document.getElementById('heroUserAvatar').src = user.avatar;
+            
+            document.getElementById('userName').textContent = user.firstName;
+            document.getElementById('userAvatar').src = user.avatar;
+            document.getElementById('userMenuName').textContent = userName;
+            document.getElementById('userMenuEmail').textContent = user.email;
+            
+            document.getElementById('mobileUserName').textContent = userName;
+            document.getElementById('mobileUserEmail').textContent = user.email;
+            document.getElementById('mobileUserAvatar').src = user.avatar;
+            
+            // Update Get Started button
+            document.getElementById('getStartedBtn').textContent = 'View Dashboard';
+        }
+
+        function signOut() {
+            currentUser = null;
+            
+            // Show auth sections
+            document.getElementById('heroAuthSection').classList.remove('hidden');
+            
+            // Hide user sections
+            document.getElementById('heroUserSection').classList.add('hidden');
+            document.getElementById('userSection').classList.add('hidden');
+            document.getElementById('mobileUserSection').classList.add('hidden');
+            
+            // Reset Get Started button
+            document.getElementById('getStartedBtn').textContent = 'Get Started';
+            
+            // Hide user menu
+            document.getElementById('userMenu').classList.remove('show');
+            
+            alert('You have been signed out successfully.');
+        }
+
+        function toggleUserMenu() {
+            document.getElementById('userMenu').classList.toggle('show');
+        }
+
+        function handleGetStarted() {
+            if (currentUser) {
+                alert('Dashboard feature coming soon! You can explore our services and opportunities in the meantime.');
+            } else {
+                openAuthModal('signup');
+            }
+        }
+
+        function initializeGoogleSignIn() {
+            // This would initialize Google Sign-In in a real implementation
+            // For demo purposes, we'll create placeholder buttons
+            const signInButton = document.getElementById('googleSignInButton');
+            const signUpButton = document.getElementById('googleSignUpButton');
+            
+            if (signInButton) {
+                signInButton.innerHTML = `
+                    <button onclick="handleGoogleAuth()" class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Continue with Google
+                    </button>
+                `;
+            }
+            
+            if (signUpButton) {
+                signUpButton.innerHTML = `
+                    <button onclick="handleGoogleAuth()" class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Sign up with Google
+                    </button>
+                `;
+            }
+        }
+
+        function handleGoogleAuth() {
+            // Demo Google authentication
+            const demoUser = {
+                id: 'google_' + Date.now(),
+                firstName: 'Demo',
+                lastName: 'User',
+                email: 'demo.user@gmail.com',
+                avatar: 'https://ui-avatars.com/api/?name=Demo+User&background=3b82f6&color=fff'
+            };
+            
+            currentUser = demoUser;
+            updateUIForSignedInUser(demoUser);
+            closeAuthModal();
+            alert('Successfully signed in with Google! (Demo)');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('authModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAuthModal();
+            }
+        });
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const userMenu = document.getElementById('userMenu');
+            const userSection = document.getElementById('userSection');
+            
+            if (userMenu && userSection && !userSection.contains(e.target)) {
+                userMenu.classList.remove('show');
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for stored user session
+            const storedUser = localStorage.getItem('currentUser');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                updateUIForSignedInUser(currentUser);
+            }
+        });
+
+        // Store current user in localStorage when signing in
+        function updateUIForSignedInUser(user) {
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            
+            // Hide auth sections
+            document.getElementById('heroAuthSection').classList.add('hidden');
+            
+            // Show user sections
+            document.getElementById('heroUserSection').classList.remove('hidden');
+            document.getElementById('userSection').classList.remove('hidden');
+            document.getElementById('mobileUserSection').classList.remove('hidden');
+            
+            // Update user info in all locations
+            const userName = `${user.firstName} ${user.lastName}`;
+            document.getElementById('heroUserName').textContent = user.firstName;
+            document.getElementById('heroUserAvatar').src = user.avatar;
+            
+            document.getElementById('userName').textContent = user.firstName;
+            document.getElementById('userAvatar').src = user.avatar;
+            document.getElementById('userMenuName').textContent = userName;
+            document.getElementById('userMenuEmail').textContent = user.email;
+            
+            document.getElementById('mobileUserName').textContent = userName;
+            document.getElementById('mobileUserEmail').textContent = user.email;
+            document.getElementById('mobileUserAvatar').src = user.avatar;
+            
+            // Update Get Started button
+            document.getElementById('getStartedBtn').textContent = 'View Dashboard';
+        }
+
+        // Clear stored user when signing out
+        function signOut() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            
+            // Show auth sections
+            document.getElementById('heroAuthSection').classList.remove('hidden');
+            
+            // Hide user sections
+            document.getElementById('heroUserSection').classList.add('hidden');
+            document.getElementById('userSection').classList.add('hidden');
+            document.getElementById('mobileUserSection').classList.add('hidden');
+            
+            // Reset Get Started button
+            document.getElementById('getStartedBtn').textContent = 'Get Started';
+            
+            // Hide user menu
+            document.getElementById('userMenu').classList.remove('show');
+            
+            alert('You have been signed out successfully.');
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d0b283252b8cf6',t:'MTc1NzUyNTg4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
